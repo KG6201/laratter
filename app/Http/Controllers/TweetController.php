@@ -64,7 +64,9 @@ class TweetController extends Controller
      */
     public function show($id)
     {
-        //
+        $tweet = Tweet::find($id);
+        // ddd($tweet);
+        return view('tweet.show', compact('tweet'));
     }
 
     /**
@@ -75,7 +77,9 @@ class TweetController extends Controller
      */
     public function edit($id)
     {
-        //
+        // ddd($id);
+        $tweet = Tweet::find($id);
+        return view('tweet.edit', compact('tweet'));
     }
 
     /**
@@ -87,7 +91,23 @@ class TweetController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+      // ddd($request, $id);
+      //バリデーション
+      $validator = Validator::make($request->all(), [
+        'tweet' => 'required | max:191',
+        'description' => 'required',
+      ]);
+      //バリデーション:エラー
+      if ($validator->fails()) {
+        return redirect()
+          ->route('tweet.edit', $id)
+          ->withInput()
+          ->withErrors($validator);
+      }
+      //データ更新処理
+      $result = Tweet::find($id)->update($request->all());
+      // ddd($request, $id);
+      return redirect()->route('tweet.index');
     }
 
     /**
@@ -98,6 +118,9 @@ class TweetController extends Controller
      */
     public function destroy($id)
     {
-        //
+        // ddd($id);
+        $result = Tweet::find($id)->delete();
+        // ddd($result);
+        return redirect()->route('tweet.index');
     }
 }
